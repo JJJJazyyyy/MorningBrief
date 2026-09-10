@@ -34,6 +34,8 @@ a{color:inherit}
 :focus-visible{outline:2px solid var(--blue); outline-offset:2px; border-radius:var(--r-s)}
 @media (prefers-reduced-motion:reduce){*{transition:none !important}}
 
+.stalebar{background:var(--warn-bg); color:var(--warn); font-size:12px; font-weight:600;
+  padding:8px 16px; text-align:center; letter-spacing:.01em}
 .sample{background:var(--blue-bg); border-bottom:1px solid var(--blue-line); color:var(--blue-ink);
   font-size:12px; font-weight:600; padding:8px 16px; text-align:center; letter-spacing:.01em}
 
@@ -633,8 +635,7 @@ details[open]>summary:before{content:"－"}
 <div id="APP"></div>
 
 <script>
-(function(){
-  var D = JSON.parse(document.getElementById('D').textContent);
+window.renderBrief = function(D){
   /* 따옴표 안쪽, 숫자+단위는 줄바꿈으로 끊기지 않게 묶는다 */
   var NB = '\u00A0';
   var glue = function(s){
@@ -786,9 +787,49 @@ details[open]>summary:before{content:"－"}
 
   h += '<div class="foot">' + esc(D.legend || '') + '<br>' + esc(D.foot || '') + '</div></div>';
   document.getElementById('APP').innerHTML = h;
+};
+
+/* ── 데이터 가져오기 ──────────────────────────────────────────
+   1순위: 앱스 스크립트(시트)   2순위: 브라우저에 저장된 마지막 것
+   3순위: 파일에 박혀 있는 것    → 어느 경우에도 빈 화면은 안 나온다 */
+(function(){
+  var SRC = 'https://script.google.com/macros/s/AKfycbxx1pzOfVXGcuWCHKOYMv04BrXzaQlXAnT2xAIy8hBlRgLHz67z31GfiHHxCyd_FfJI/exec';
+  var KEY = 'brief:last';
+  var seed = null;
+  try { seed = JSON.parse(document.getElementById('D').textContent); } catch (e) {}
+
+  var show = function(D, stale){
+    if (!D) return;
+    window.renderBrief(D);
+    if (stale){
+      var b = document.createElement('div');
+      b.className = 'stalebar';
+      b.textContent = '최신 데이터를 불러오지 못해 마지막으로 받은 내용을 보여드립니다';
+      document.body.insertBefore(b, document.body.firstChild);
+    }
+  };
+
+  var cached = null;
+  try { cached = JSON.parse(localStorage.getItem(KEY)); } catch (e) {}
+
+  var timer = setTimeout(function(){ fail(); }, 6000);
+  var done = false;
+  function fail(){
+    if (done) return; done = true; clearTimeout(timer);
+    show(cached || seed, true);
+  }
+
+  fetch(SRC, { cache: 'no-store' })
+    .then(function(r){ return r.json(); })
+    .then(function(j){
+      if (done) return;
+      if (!j || !j.ok || !j.data) throw new Error('no data');
+      done = true; clearTimeout(timer);
+      try { localStorage.setItem(KEY, JSON.stringify(j.data)); } catch (e) {}
+      show(j.data, false);
+    })
+    .catch(fail);
 })();
 </script>
 </body>
 </html>
-
-</body></html>
