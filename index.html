@@ -819,16 +819,21 @@ window.renderBrief = function(D){
     show(cached || seed, true);
   }
 
-  fetch(SRC, { cache: 'no-store' })
-    .then(function(r){ return r.json(); })
-    .then(function(j){
-      if (done) return;
-      if (!j || !j.ok || !j.data) throw new Error('no data');
-      done = true; clearTimeout(timer);
-      try { localStorage.setItem(KEY, JSON.stringify(j.data)); } catch (e) {}
-      show(j.data, false);
-    })
-    .catch(fail);
+  /* 앱스 스크립트는 교차 도메인 요청을 허용하지 않아 fetch로는 못 읽는다.
+     script 태그로 불러오는 JSONP 방식은 그 제약을 받지 않는다. */
+  var CB = 'briefCb' + Date.now();
+  window[CB] = function(j){
+    if (done) return;
+    if (!j || !j.ok || !j.data) return fail();
+    done = true; clearTimeout(timer);
+    try { localStorage.setItem(KEY, JSON.stringify(j.data)); } catch (e) {}
+    show(j.data, false);
+    try { delete window[CB]; } catch (e) {}
+  };
+  var sc = document.createElement('script');
+  sc.src = SRC + '?callback=' + CB + '&t=' + Date.now();
+  sc.onerror = fail;
+  document.head.appendChild(sc);
 })();
 </script>
 </body>
