@@ -759,15 +759,14 @@ window.renderBrief = function(D){
       var n = Math.max(1, Math.min(3, it.stars || 1));
       /* VIP방 종목은 성과순이라 ★★★이 먼저 꺼낼 자리다 */
       var lead = (sec.id === 'hold' && n === 3);
-      var tell = '';
-      if (sec.id === 'hold' && !it.upcoming){
-        tell = n === 3 ? '<span class="tell first">먼저 꺼내기</span>'
-                       : '<span class="tell ask">물어보면 답하기</span>';
-      }
+      var right = '';
+      if (it.upcoming) right = '<span class="soonchip">' + esc(it.upcoming) + '</span>';
+      else if (sec.id === 'hold') right = n === 3
+          ? '<span class="tell first">먼저 꺼내기</span>'
+          : '<span class="tell ask">물어보면 답하기</span>';
       h += '<article class="it' + (lead ? ' lead' : '') + '"><div class="starrow">'
          + '<span class="stars' + (n === 1 ? ' s1' : '') + '">' + '★'.repeat(n) + '</span>'
-         + (it.upcoming ? '<span class="soonchip">' + esc(it.upcoming) + '</span>' : tell)
-         + '</div>'
+         + right + '</div>'
          + '<h3 class="t">' + SEG(it.t) + '</h3><div class="say">' + SEG(it.s) + '</div>';
       if (it.avg && it.avg.buy){
         var sgn = function(r){ var c = String(r).charAt(0); return (c === '−' || c === '-') ? 'down' : 'up'; };
