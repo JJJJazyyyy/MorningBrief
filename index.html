@@ -115,13 +115,13 @@ a{color:inherit}
 
 /* 항목 */
 .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(336px,1fr)); gap:16px; align-items:stretch; margin-top:20px}
-/* 항목이 4개 이상이면 좌우 여백까지 써서 한 줄에 담고, 묶음을 가운데 정렬한다 */
-.blk.spread{position:relative; left:50%; transform:translateX(-50%);
+/* 항목이 4개 이상이면 카드 묶음만 좌우 여백까지 넓힌다. 제목은 본문 폭 그대로 둔다 */
+.blk.spread>.grid{position:relative; left:50%; transform:translateX(-50%);
   width:min(1640px, calc(100vw - 64px))}
 .grid.c4{grid-template-columns:repeat(4,minmax(0,1fr))}
 .grid.c5{grid-template-columns:repeat(5,minmax(0,1fr))}
 @media (max-width:1420px){
-  .blk.spread{position:static; left:auto; transform:none; width:auto}
+  .blk.spread>.grid{position:static; left:auto; transform:none; width:auto}
   .grid.c4,.grid.c5{grid-template-columns:repeat(auto-fill,minmax(320px,1fr))}
 }
 .it{background:var(--card); border-radius:var(--r-l); box-shadow:var(--lift); padding:20px;
