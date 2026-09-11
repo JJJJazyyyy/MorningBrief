@@ -744,7 +744,7 @@ window.renderBrief = function(D){
     if (sec.hot && !items.length) return;
     /* 4~5개는 한 줄, 6개 이상은 절반씩 두 줄. 최대 5열 */
     var cols = items.length <= 5 ? items.length : Math.min(5, Math.ceil(items.length / 2));
-    var spread = !sec.hot && items.length >= 4 && cols >= 4;
+    var spread = sec.id === 'hold' && items.length >= 4 && cols >= 4;
     h += '<section class="blk' + (sec.hot ? ' hot' : '') + (spread ? ' spread' : '') + '">'
        + sh(sec.title, sec.desc);
     if (!items.length) h += '<div class="empty">오늘 이 칸에 담을 항목이 없습니다.</div>';
