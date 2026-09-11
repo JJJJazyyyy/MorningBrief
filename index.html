@@ -115,6 +115,15 @@ a{color:inherit}
 
 /* 항목 */
 .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(336px,1fr)); gap:16px; align-items:stretch; margin-top:20px}
+/* 항목이 4개 이상이면 좌우 여백까지 써서 한 줄에 담고, 묶음을 가운데 정렬한다 */
+.blk.spread{position:relative; left:50%; transform:translateX(-50%);
+  width:min(1640px, calc(100vw - 64px))}
+.grid.c4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.grid.c5{grid-template-columns:repeat(5,minmax(0,1fr))}
+@media (max-width:1420px){
+  .blk.spread{position:static; left:auto; transform:none; width:auto}
+  .grid.c4,.grid.c5{grid-template-columns:repeat(auto-fill,minmax(320px,1fr))}
+}
 .it{background:var(--card); border-radius:var(--r-l); box-shadow:var(--lift); padding:20px;
   display:flex; flex-direction:column; overflow:hidden;
   transition:box-shadow .18s var(--ease)}
@@ -733,9 +742,13 @@ window.renderBrief = function(D){
   (D.sections || []).forEach(function(sec){
     var items = (sec.items || []).slice().sort(function(a,b){ return (b.stars||0) - (a.stars||0); });
     if (sec.hot && !items.length) return;
-    h += '<section class="blk' + (sec.hot ? ' hot' : '') + '">' + sh(sec.title, sec.desc);
+    /* 4~5개는 한 줄, 6개 이상은 절반씩 두 줄. 최대 5열 */
+    var cols = items.length <= 5 ? items.length : Math.min(5, Math.ceil(items.length / 2));
+    var spread = !sec.hot && items.length >= 4 && cols >= 4;
+    h += '<section class="blk' + (sec.hot ? ' hot' : '') + (spread ? ' spread' : '') + '">'
+       + sh(sec.title, sec.desc);
     if (!items.length) h += '<div class="empty">오늘 이 칸에 담을 항목이 없습니다.</div>';
-    h += '<div class="grid">';
+    h += '<div class="grid' + (spread ? ' c' + cols : '') + '">';
     items.forEach(function(it){
       var n = Math.max(1, Math.min(3, it.stars || 1));
       h += '<article class="it"><div class="starrow">'
