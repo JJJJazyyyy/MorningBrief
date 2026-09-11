@@ -118,8 +118,10 @@ a{color:inherit}
 .it{background:var(--card); border-radius:var(--r-l); box-shadow:var(--lift); padding:20px;
   display:flex; flex-direction:column; overflow:hidden;
   transition:box-shadow .18s var(--ease)}
-.soonbar{margin:-20px -20px 16px; padding:5px 18px; background:var(--warn-bg); color:var(--warn);
-  font-size:10.5px; font-weight:600; letter-spacing:.14em; line-height:1.5}
+.starrow{display:flex; align-items:center; gap:8px}
+.soonchip{margin-left:auto; font-size:11px; font-weight:600; color:var(--warn);
+  background:var(--warn-bg); border:1px solid var(--warn-line); border-radius:var(--r-s);
+  padding:3px 9px; white-space:nowrap; letter-spacing:.02em}
 .it:hover{box-shadow:var(--lift2)}
 .blk.hot{border-top:0; padding-top:0}
 .blk.hot .grid{grid-template-columns:1fr; gap:16px}
@@ -736,9 +738,10 @@ window.renderBrief = function(D){
     h += '<div class="grid">';
     items.forEach(function(it){
       var n = Math.max(1, Math.min(3, it.stars || 1));
-      h += '<article class="it">'
-         + (it.upcoming ? '<div class="soonbar">' + esc(it.upcoming) + '</div>' : '')
-         + '<div class="stars' + (n === 1 ? ' s1' : '') + '">' + '★'.repeat(n) + '</div>'
+      h += '<article class="it"><div class="starrow">'
+         + '<span class="stars' + (n === 1 ? ' s1' : '') + '">' + '★'.repeat(n) + '</span>'
+         + (it.upcoming ? '<span class="soonchip">' + esc(it.upcoming) + '</span>' : '')
+         + '</div>'
          + '<h3 class="t">' + SEG(it.t) + '</h3><div class="say">' + SEG(it.s) + '</div>';
       if (it.avg && it.avg.buy){
         var sgn = function(r){ var c = String(r).charAt(0); return (c === '−' || c === '-') ? 'down' : 'up'; };
