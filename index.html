@@ -757,11 +757,11 @@ window.renderBrief = function(D){
     h += '<div class="grid' + (spread ? ' c' + cols : '') + '">';
     items.forEach(function(it){
       var n = Math.max(1, Math.min(3, it.stars || 1));
-      /* VIP방 종목은 성과순이라 ★★★이 먼저 꺼낼 자리다 */
-      var lead = (sec.id === 'hold' && n === 3);
+      /* 별점은 계좌 손익 순서, lead 는 어제 성과로 정한 오늘 꺼낼 종목 */
+      var lead = (sec.id === 'hold' && it.lead === true);
       var right = '';
       if (it.upcoming) right = '<span class="soonchip">' + esc(it.upcoming) + '</span>';
-      else if (sec.id === 'hold') right = n === 3
+      else if (sec.id === 'hold') right = lead
           ? '<span class="tell first">먼저 꺼내기</span>'
           : '<span class="tell ask">물어보면 답하기</span>';
       h += '<article class="it' + (lead ? ' lead' : '') + '"><div class="starrow">'
